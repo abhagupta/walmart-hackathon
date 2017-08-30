@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const Customer = require("./models/customer");
 const Subscriptions = require("./models/subscriptions");
+const Predictions = require("./models/predictions");
 const Notification = require('./models/notification');
 
 router.get("/", function(req, res){
@@ -28,6 +29,7 @@ router.get("/api/subscriptions", function(req, res){
 
 });
 
+
 router.post("/api/subscriptions", function(req, res){
        const response = req.body;
        //console.log('incoming',  incoming.subscriptionId);
@@ -45,6 +47,43 @@ router.post("/api/subscriptions", function(req, res){
             }
             res.send("saved");
         })
+});
+
+router.get("/api/predictions", function(req, res){
+    // should find the customer in the database
+    let customerId = req.query.customerId;
+
+    Predictions.find({customerId: customerId}, function(err, predictions){
+        if(err){
+            throw err;
+        }
+        if(predictions.length > 0){
+            res.json(predictions);
+        } else {
+            res.send("No predictions found");
+        }
+
+        //res.json ({foo:'bar'});
+
+    })
+
+});
+
+router.post("/api/predictions", function(req, res){
+    const response = req.body;
+    let predictions = new Predictions();
+    predictions.customerId=response.customerId;
+    predictions.products = response.products;
+    predictions.schedule=response.schedule;
+
+
+    predictions.save(function(err){
+        if (err) {
+            console.log(err);
+            return err;
+        }
+        res.send("predictions saved");
+    })
 });
 
 router.get("/api/customerInfo", function(req, res){

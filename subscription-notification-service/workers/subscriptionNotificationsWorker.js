@@ -9,14 +9,14 @@ const subscriptionNotificationWorkerFactory = function() {
 
     return {
         run: function(customerId) {
-            request.get("http://subscription-service-hackathon.herokuapp.com/api/subscriptions?customerId="+customerId, function(err, res, body){
+            request.get("http://subscription-service-hackathon.herokuapp.com/api/predictions?customerId="+customerId, function(err, res, body){
                 if(err){
                     console.log(err);
                     return err;
                 }
                 console.log("returned status code" , res.statusCode);
-                let subscriptions = JSON.parse(body);
-                console.log("subscriptions: ", subscriptions);
+                let predictions = JSON.parse(body);
+                console.log("predictions: ", predictions);
                 let products = [];
 
                 request.get('http://subscription-service-hackathon.herokuapp.com/api/customerInfo?customerId=' + customerId, function(err, res, body){
@@ -30,13 +30,13 @@ const subscriptionNotificationWorkerFactory = function() {
                     let phoneNumber = customerInfo.phone_number;
                     let customerFirstName = customerInfo.first_name;
                     let customerLastName = customerInfo.first_name;
-                    subscriptions.forEach(function(subscription) {
+                    predictions.forEach(function(prediction) {
 
                         let dataForNotification = {
                             phoneNumber: phoneNumber,
                             firstName: customerFirstName,
                             lastName: customerLastName,
-                            products: subscription.products,
+                            products: prediction.products,
                             customerId: customerId,
                         }
                         sendNotification(dataForNotification);
@@ -52,16 +52,16 @@ const subscriptionNotificationWorkerFactory = function() {
 };
 
 
-function sendNotification(subscription){
+function sendNotification(prediction){
     const client = new Twilio(cfg.twilioAccountSid, cfg.twilioAuthToken);
-    let products =  getListOfProducts(subscription.products);
-    subscription.products = products;
-    console.log("products :", products);
+    let products =  getListOfProducts(prediction.products);
+    prediction.products = products;
+
     const options = {
-        to: `+ ${subscription.phoneNumber}`,
+        to: `+ ${prediction.phoneNumber}`,
         from: cfg.twilioPhoneNumber,
         /* eslint-disable max-len */
-        body: `Hi ${subscription.firstName}. Would you like to have ${products} as one of your subscribed products?`,
+        body: `Hi ${prediction.firstName}. Would you like to have ${prediction.products} as one of your subscribed products?`,
         /* eslint-enable max-len */
     }
 
@@ -72,13 +72,13 @@ function sendNotification(subscription){
             console.error(err);
         } else {
             // Log the last few digits of a phone number
-            let masked = subscription.phoneNumber.substr(0,
-                subscription.phoneNumber.length - 5);
+            let masked = prediction.phoneNumber.substr(0,
+                prediction.phoneNumber.length - 5);
             masked += '*****';
             console.log(`Message sent to ${masked}`);
 
             //send a post call to save notification in database as well so we can retrieve it later
-            makePostCallToSaveNotification(subscription);
+            makePostCallToSaveNotification(prediction);
         }
     });
 }
@@ -91,12 +91,12 @@ function getListOfProducts(products){
     return products;
 }
 
-function makePostCallToSaveNotification(subscription){
+function makePostCallToSaveNotification(prediction){
     const body = {
 
-        "customerId": subscription.customerId,
-        "products": subscription.products,
-        "phoneNumber": subscription.phoneNumber
+        "customerId": prediction.customerId,
+        "products": prediction.products,
+        "phoneNumber": prediction.phoneNumber
 
     }
 

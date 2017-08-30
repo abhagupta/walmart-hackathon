@@ -2,4 +2,4 @@
 
 const subscriptionWorkerFactory = require('../workers/subscriptionNotificationsWorker');
 
-subscriptionWorkerFactory.run('Duobam');
+subscriptionWorkerFactory.run('Solarbreeze');
