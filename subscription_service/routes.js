@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const Customer = require("./models/customer");
 const Subscriptions = require("./models/subscriptions");
+const Notification = require('./models/notification');
 
 router.get("/", function(req, res){
     res.send("Hello world");
@@ -60,15 +61,37 @@ router.get("/api/customerInfo", function(req, res){
 
 });
 
+router.get("/api/customerInfo/:phoneNumber", function(req, res){
+    // should find the customer in the database
+    const phoneNumber = req.params.phoneNumber;
+
+    Customer.findOne({phone_number: phoneNumber}, function(err, customer){
+        if(err){
+            throw err;
+        }
+        res.json(customer);
+
+    })
+
+});
+
 
 
 router.get("/subscription?subscriptionId", function(req, res){
     // should find the subscription in database and return the details
 });
 
-router.post("/subscription", function(req, res){
-    // retrieve data from the body of the request
-    // upate subscription to be accepted or now
+router.post("/api/notification", function(req, res){
+   const notification = new Notification();
+   notification.phoneNumber = req.body.phoneNumber;
+   notification.customerId = req.body.customerId;
+    notification.products = req.body.products;
+    notification.save(function(err, result){
+        if(err){
+            throw err;
+        }
+        res.send("notification saved");
+    })
 });
 
 module.exports = router;

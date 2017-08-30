@@ -8,8 +8,8 @@ const concat = require('lodash.concat');
 const subscriptionNotificationWorkerFactory = function() {
 
     return {
-        run: function() {
-            request.get("http://localhost:3000/api/subscriptions?customerId=Solarbreeze", function(err, res, body){
+        run: function(customerId) {
+            request.get("http://localhost:3000/api/subscriptions?customerId="+customerId, function(err, res, body){
                 if(err){
                     console.log(err);
                     return err;
@@ -36,7 +36,8 @@ const subscriptionNotificationWorkerFactory = function() {
                             phoneNumber: phoneNumber,
                             firstName: customerFirstName,
                             lastName: customerLastName,
-                            products: subscription.products
+                            products: subscription.products,
+                            customerId: customerId,
                         }
                         sendNotification(dataForNotification);
                     });
@@ -54,7 +55,7 @@ const subscriptionNotificationWorkerFactory = function() {
 function sendNotification(subscription){
     const client = new Twilio(cfg.twilioAccountSid, cfg.twilioAuthToken);
     let products =  getListOfProducts(subscription.products);
-
+    subscription.products = products;
     console.log("products :", products);
     const options = {
         to: `+ ${subscription.phoneNumber}`,
@@ -75,6 +76,9 @@ function sendNotification(subscription){
                 subscription.phoneNumber.length - 5);
             masked += '*****';
             console.log(`Message sent to ${masked}`);
+
+            //send a post call to save notification in database as well so we can retrieve it later
+            makePostCallToSaveNotification(subscription);
         }
     });
 }
@@ -87,5 +91,27 @@ function getListOfProducts(products){
     return products;
 }
 
+function makePostCallToSaveNotification(subscription){
+    const body = {
+
+        "customerId": subscription.customerId,
+        "products": subscription.products,
+        "phoneNumber": subscription.phoneNumber
+
+    }
+
+    const options = {
+        url: 'http://localhost:3000/api/notification',
+        headers: {'content-type' : 'application/json'},
+        json: body
+
+    }
+    request.post(options, function(err, res, body){
+        if(err){
+            throw err;
+        }
+        console.log("message from api:", body);
+    })
+}
 
 module.exports = subscriptionNotificationWorkerFactory();
