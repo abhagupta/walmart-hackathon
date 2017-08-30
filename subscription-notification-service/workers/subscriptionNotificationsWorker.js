@@ -9,7 +9,7 @@ const subscriptionNotificationWorkerFactory = function() {
 
     return {
         run: function(customerId) {
-            request.get("http://localhost:3000/api/subscriptions?customerId="+customerId, function(err, res, body){
+            request.get("http://subscription-service-hackathon.herokuapp.com/api/subscriptions?customerId="+customerId, function(err, res, body){
                 if(err){
                     console.log(err);
                     return err;
@@ -19,7 +19,7 @@ const subscriptionNotificationWorkerFactory = function() {
                 console.log("subscriptions: ", subscriptions);
                 let products = [];
 
-                request.get('http://localhost:3000/api/customerInfo?customerId=Solarbreeze', function(err, res, body){
+                request.get('http://subscription-service-hackathon.herokuapp.com/api/customerInfo?customerId=' + customerId, function(err, res, body){
                     if(err){
                         console.log(err);
                         return err;
@@ -101,7 +101,7 @@ function makePostCallToSaveNotification(subscription){
     }
 
     const options = {
-        url: 'http://localhost:3000/api/notification',
+        url: 'http://subscription-service-hackathon.herokuapp.com/api/notification',
         headers: {'content-type' : 'application/json'},
         json: body
 

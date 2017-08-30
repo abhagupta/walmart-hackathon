@@ -77,8 +77,12 @@ router.get("/api/customerInfo/:phoneNumber", function(req, res){
 
 
 
-router.get("/subscription?subscriptionId", function(req, res){
-    // should find the subscription in database and return the details
+router.get("/api/notification", function(req, res){
+    const phoneNumber = req.query.phoneNumber;
+    Notification.find({}, function(err, notifications){
+        if(err) throw err;
+        res.send(notifications);
+    })
 });
 
 router.post("/api/notification", function(req, res){
