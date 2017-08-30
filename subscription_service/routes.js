@@ -28,17 +28,22 @@ router.get("/api/subscriptions", function(req, res){
 });
 
 router.post("/api/subscriptions", function(req, res){
-       const incoming = req.body;
-       console.log('incoming',  incoming);
+       const response = req.body;
+       //console.log('incoming',  incoming.subscriptionId);
         let subscription = new Subscriptions();
-        // subscription.save(function(err){
-        //     if (err) return err;
-        //     res.send("saved");
-        // })
+        subscription.subscriptionId = response.subscriptionId;
+        subscription.customerId=response.customerId;
+        subscription.products = response.products;
+        subscription.schedule=response.schedule;
+        subscription.paymentInfo = response.paymentInfo;
 
-    res.send ("this is not working as of now");
-
-
+        subscription.save(function(err){
+            if (err) {
+                console.log(err);
+                return err;
+            }
+            res.send("saved");
+        })
 });
 
 router.get("/api/customerInfo", function(req, res){
@@ -66,8 +71,4 @@ router.post("/subscription", function(req, res){
     // upate subscription to be accepted or now
 });
 
-
-function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-}
 module.exports = router;
