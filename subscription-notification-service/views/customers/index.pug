@@ -1,0 +1,34 @@
+extends ./layout
+
+block content
+  table.table
+      thead
+        tr
+          th Customer Id
+          th Name
+          th Phone number
+          th Item
+          th Item Name
+          th Period
+          th Appointment time (UTC)
+          th Reminder time
+          th Timezone
+          th Actions
+          th
+      tbody
+        each customer in customers
+          tr
+            td  !{customer.cid}
+            td  !{customer.name}
+            td  !{customer.phoneNumber}
+            td  !{customer.item}
+            td  !{customer.itemName}
+            td  !{customer.period}
+            td  !{customer.time}
+            td  !{customer.notification}
+            td  !{customer.timeZone}
+            td
+              a.btn.btn-default.btn-sm(href="/customers/" + customer.id + "/edit") Edit
+            td
+              form(action="/customers/" + customer.id + "/delete",method="POST")
+                button.btn.btn-danger.btn-sm(type='submit') Delete

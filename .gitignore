@@ -1,0 +1,4 @@
+subscription-entry-app/node_modules
+subscription-notification-service/node_modules
+subscription_service/node_modules
+.idea
