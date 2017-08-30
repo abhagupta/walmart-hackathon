@@ -30,8 +30,8 @@ app.use(cookieParser());
 
 app.use('/', routes);
 
-app.listen(3000, function(){
- console.log("server started at 3000");
+app.listen(process.env.PORT || 3000, function(){
+ console.log("server started ");
 })
 
 
