@@ -5,7 +5,7 @@ const NotificationSchema = {
     phoneNumber: String,
     customerId: String,
     products:[
-        Number
+        String
     ]
 };
 

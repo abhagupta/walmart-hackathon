@@ -4,6 +4,7 @@ const Customer = require("./models/customer");
 const Subscriptions = require("./models/subscriptions");
 const Predictions = require("./models/predictions");
 const Notification = require('./models/notification');
+const request = require('request');
 
 router.get("/", function(req, res){
     res.send("Hello world");
@@ -136,5 +137,20 @@ router.post("/api/notification", function(req, res){
         res.send("notification saved");
     })
 });
+
+router.get("/api/productName", function(req, res){
+    var productId = req.query.productId;
+    var apiKey = '7ysuvzkdw26n9x8jxwyzx568';
+    var url = "http://api.walmartlabs.com/v1/items/" + productId + "?apiKey=" + apiKey +"&format=json";
+
+    request(url, function(err, response, body){
+        if (err) throw err;
+        var name = JSON.parse(body).name;
+        res.send(name);
+    })
+
+
+
+})
 
 module.exports = router;

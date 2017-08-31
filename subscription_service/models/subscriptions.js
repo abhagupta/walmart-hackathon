@@ -5,7 +5,7 @@ const SubscriptionSchema = {
     subscriptionId: Number,
     customerId: String,
     products:[
-        Number
+        String
     ],
     schedule:{
         date: Date,

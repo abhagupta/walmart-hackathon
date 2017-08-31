@@ -14,9 +14,9 @@ const subscriptionNotificationWorkerFactory = function() {
                     console.log(err);
                     return err;
                 }
-                console.log("returned status code" , res.statusCode);
-                let predictions = JSON.parse(body);
-                console.log("predictions: ", predictions);
+                console.log("returned status code" , body);
+                let prediction = JSON.parse(body)[0];
+                console.log("predictions: ", prediction);
                 let products = [];
 
                 request.get('http://subscription-service-hackathon.herokuapp.com/api/customerInfo?customerId=' + customerId, function(err, res, body){
@@ -30,17 +30,34 @@ const subscriptionNotificationWorkerFactory = function() {
                     let phoneNumber = customerInfo.phone_number;
                     let customerFirstName = customerInfo.first_name;
                     let customerLastName = customerInfo.first_name;
-                    predictions.forEach(function(prediction) {
+                    // predictions.forEach(function(prediction) {
+                    //
+                    //     let dataForNotification = {
+                    //         phoneNumber: phoneNumber,
+                    //         firstName: customerFirstName,
+                    //         lastName: customerLastName,
+                    //         products: prediction.products,
+                    //         customerId: customerId,
+                    //     }
+                    //     sendNotification(dataForNotification);
+                    // });
+                        console.log('http://subscription-service-hackathon.herokuapp.com/api/productName?productId='+ prediction.products[0]);
+                        request('http://subscription-service-hackathon.herokuapp.com/api/productName?productId='+ prediction.products[0], function(err, res, name){
+                            if(err) throw err;
+                            let dataForNotification = {
+                                phoneNumber: phoneNumber,
+                                firstName: customerFirstName,
+                                lastName: customerLastName,
+                                products: name,
+                                customerId: customerId,
+                                frequency: prediction.schedule.frequency
+                            }
+                            sendNotification(dataForNotification);
+                        })
 
-                        let dataForNotification = {
-                            phoneNumber: phoneNumber,
-                            firstName: customerFirstName,
-                            lastName: customerLastName,
-                            products: prediction.products,
-                            customerId: customerId,
-                        }
-                        sendNotification(dataForNotification);
-                    });
+
+                       // sendNotification(dataForNotification);
+
 
 
 
@@ -54,14 +71,15 @@ const subscriptionNotificationWorkerFactory = function() {
 
 function sendNotification(prediction){
     const client = new Twilio(cfg.twilioAccountSid, cfg.twilioAuthToken);
-    let products =  getListOfProducts(prediction.products);
+    //let products =  getListOfProducts(prediction.products);
+    let products =  prediction.products;
     prediction.products = products;
 
     const options = {
         to: `+ ${prediction.phoneNumber}`,
         from: cfg.twilioPhoneNumber,
         /* eslint-disable max-len */
-        body: `Hi ${prediction.firstName}. Would you like to have ${prediction.products} as one of your subscribed products?`,
+        body: `Hi ${prediction.firstName}. You ordered ${prediction.products} about every ${prediction.frequency} days. Would you like to automatically get this product every ${prediction.frequency} days?`,
         /* eslint-enable max-len */
     }
 

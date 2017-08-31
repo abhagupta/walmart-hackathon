@@ -7,10 +7,18 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
 const app = express();
 const routes = require('./routes');
+const fs = require('fs');
+const https = require('https');
 
+const keys = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem')
+}
+
+app.use(cors());
 
 const mongoDB = process.env.MONGODB_URL;
 mongoose.connect(mongoDB, {
@@ -30,10 +38,13 @@ app.use(cookieParser());
 
 app.use('/', routes);
 
-app.listen(process.env.PORT || 3000, function(){
- console.log("server started ");
-})
+// app.listen(process.env.PORT || 4000, function(){
+//  console.log("server started ");
+// })
 
-
+https.createServer(keys, app).listen(4000, function(err){
+    console.log(err);
+    console.log("server strted :", 4000);
+});
 
 module.exports = app;
