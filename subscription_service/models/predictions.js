@@ -3,9 +3,10 @@
 const mongoose = require('mongoose');
 const PredictionSchema = {
     customerId: String,
-    products:[
-        Number
-    ],
+    products:[{
+        productId: Number,
+        name: String
+    }],
     schedule:{
         date: Date,
         frequency: Number,
