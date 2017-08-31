@@ -9,7 +9,7 @@ const subscriptionNotificationWorkerFactory = function() {
 
     return {
         run: function(customerId) {
-            request.get("http://subscription-service-hackathon.herokuapp.com/api/predictions?customerId="+customerId, function(err, res, body){
+            request.get("http://subscription-service-new.herokuapp.com/api/predictions?customerId="+customerId, function(err, res, body){
                 if(err){
                     console.log(err);
                     return err;
@@ -19,7 +19,7 @@ const subscriptionNotificationWorkerFactory = function() {
                 console.log("predictions: ", prediction);
                 let products = [];
 
-                request.get('http://subscription-service-hackathon.herokuapp.com/api/customerInfo?customerId=' + customerId, function(err, res, body){
+                request.get('http://subscription-service-new.herokuapp.com/api/customerInfo?customerId=' + customerId, function(err, res, body){
                     if(err){
                         console.log(err);
                         return err;
@@ -30,19 +30,9 @@ const subscriptionNotificationWorkerFactory = function() {
                     let phoneNumber = customerInfo.phone_number;
                     let customerFirstName = customerInfo.first_name;
                     let customerLastName = customerInfo.first_name;
-                    // predictions.forEach(function(prediction) {
-                    //
-                    //     let dataForNotification = {
-                    //         phoneNumber: phoneNumber,
-                    //         firstName: customerFirstName,
-                    //         lastName: customerLastName,
-                    //         products: prediction.products,
-                    //         customerId: customerId,
-                    //     }
-                    //     sendNotification(dataForNotification);
-                    // });
-                        console.log('http://subscription-service-hackathon.herokuapp.com/api/productName?productId='+ prediction.products[0]);
-                        request('http://subscription-service-hackathon.herokuapp.com/api/productName?productId='+ prediction.products[0], function(err, res, name){
+
+                        //console.log('http://subscription-service-hackathon.herokuapp.com/api/productName?productId='+ prediction.products[0]);
+                        request('http://subscription-service-new.herokuapp.com/api/productName?productId='+ prediction.products[0], function(err, res, name){
                             if(err) throw err;
                             let dataForNotification = {
                                 phoneNumber: phoneNumber,
@@ -119,7 +109,7 @@ function makePostCallToSaveNotification(prediction){
     }
 
     const options = {
-        url: 'http://subscription-service-hackathon.herokuapp.com/api/notification',
+        url: 'http://subscription-service-new.herokuapp.com/api/notification',
         headers: {'content-type' : 'application/json'},
         json: body
 
