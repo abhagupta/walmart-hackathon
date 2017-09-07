@@ -25,7 +25,7 @@ console.log("request body:", req.body);
 let phoneNumber = req.body.From;
 phoneNumber  = phoneNumber.replace(/[+]/,'');
 
-request.get('http://subscription-service-hackathon.herokuapp.com/api/notification?phoneNumber=' + phoneNumber, function(err, responseForGet, body){
+request.get('http://subscription-service-new.herokuapp.com/api/notification?phoneNumber=' + phoneNumber, function(err, responseForGet, body){
     if(err) throw err;
     console.log("response from api:",  body);
     const arrayOfNotifications = JSON.parse(body);
@@ -45,7 +45,7 @@ request.get('http://subscription-service-hackathon.herokuapp.com/api/notificatio
         const options = {
 
             headers: {'content-type' : 'application/json'},
-            url:     'https://subscription-service-hackathon.herokuapp.com/api/subscriptions',
+            url:     'https://subscription-service-new.herokuapp.com/api/subscriptions',
             json:    jsonPayload
         }
 
